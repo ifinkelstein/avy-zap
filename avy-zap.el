@@ -156,6 +156,13 @@
 (defconst avy-zap--function-list '(kill-region delete-region)
   "List of valid `avy-zap-function' values.")
 
+(defvar avy-zap-jump-function 'avy-goto-char
+  "The avy function used for jumping to char.")
+
+(defconst avy-zap-jump--function-list '(avy-goto-char avy-goto-char-timer avy-goto-char-2)
+  "List of valid `avy-goto-*' functions.")
+
+
 (defvar avy-zap-dwim-prefer-avy t
   "Whether the default dwim behavior of `avy-zap' should use `avy' or not.")
 
@@ -186,12 +193,12 @@ Otherwise, don't rebind."
         avy-zap-forward-only
         (window-start (&optional window) (point))
       (if (member avy-zap-function avy-zap--function-list)
-	  (when (call-interactively 'avy-goto-char)
-	    (and (avy-zap--xor (<= start (point)) zap-up-to-char-p)
-		 (forward-char))
-	    (funcall avy-zap-function start (point)))
+	      (when (call-interactively avy-zap-jump-function)
+	        (and (avy-zap--xor (<= start (point)) zap-up-to-char-p)
+		         (forward-char))
+	        (funcall avy-zap-function start (point)))
         (error "Invalid `avy-zap-function' value `%s' is not in the valid list: %s"
-	       avy-zap-function avy-zap--function-list)))))
+	           avy-zap-function avy-zap--function-list)))))
 
 ;;;###autoload
 (defun avy-zap-to-char ()
